@@ -1,3 +1,21 @@
 #! /usr/bin/env ruby
 
+require 'main'
+require 'redcli'
+
+Main {
+  
+  mode "view" do
+
+    argument("subreddit") {
+      cast :string
+    }
+    
+    def run
+      app = Redcli::Application.new(subreddit:params["subreddit"])
+      app.run
+    end
+  end
+
+}
 
