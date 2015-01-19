@@ -12,7 +12,7 @@ Main {
     }
     
     def run
-      app = Redcli::Application.new(subreddit:params["subreddit"])
+      app = Redcli::Application.new(subreddit:params["subreddit"].value)
       app.run
     end
   end
