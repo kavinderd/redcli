@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-debugger", '~> 0.2.3'
 
   spec.add_runtime_dependency "faraday", '~> 0.9.1'
+  spec.add_runtime_dependency "main", '~> 6.1.0'
 end
