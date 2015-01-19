@@ -11,10 +11,7 @@ module Redcli
     end
 
     def run
-      @running = true
-      while @running
-        display_links
-      end
+      display_links
     end
 
     private
