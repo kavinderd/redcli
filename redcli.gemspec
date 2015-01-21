@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["kavinderd@gmail.com"]
   spec.summary       = %q{Reddit Cli reader}
   spec.description   = %q{}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/kavinderd/redcli"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
