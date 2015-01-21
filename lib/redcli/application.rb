@@ -6,8 +6,10 @@ module Redcli
 
     ROOT = "http://www.reddit.com"
 
-    def initialize(subreddit:)
+    def initialize(subreddit:, stdout:STDOUT, stdin: STDIN)
       @subreddit = subreddit
+      @stdout = stdout
+      @stdin = stdin
     end
 
     def run
@@ -26,22 +28,22 @@ module Redcli
       if body
         links = body["data"]["children"].first(10)
         links.each_with_index do |link, i|
-          puts "#{i+1}) #{link["data"]["title"]}"
+          @stdout.puts "#{i+1}) #{link["data"]["title"]}"
         end
         prompt_user(:links)
-        input = gets.chomp
+        input = @stdin.gets.chomp
         valid_input = false
         parse_links_input(input, links)
       else
-        puts "Sorry, no data available"
+        @stdout.puts "Sorry, no data available"
       end
     end
 
     def prompt_user(type=:links)
       if type == :links
-        puts "(1-10) for more information, (q)uit"
+        @stdout.puts "(1-10) for more information, (q)uit"
       else
-        puts "(o)pen in browser, (q)uit"
+        @stdout.puts "(o)pen in browser, (q)uit"
       end
     end
 
@@ -49,20 +51,20 @@ module Redcli
       if input =~ /[0-9]/
         link = links[input.to_i - 1]
         display_link(link)
-        promp_user(:link)
-        input = gets.chomp
+        prompt_user(:link)
+        input = @stdin.gets.chomp
         parse_link_input(input, link, links) 
       elsif input == 'q'
-        abort
+        return
       else
       puts "Invalid input"
-      promp_user(links)
-      input = gets.chomp
+      prompt_user(links)
+      input = STDIN.gets.chomp
       parse_links_input(input, links)
       end 
     end
 
-    def diplay_link(link)
+    def display_link(link)
       if link["data"]["selftext"] != ""
         puts link["data"]["selftext"]
       else
