@@ -13,7 +13,14 @@ module Redcli
     end
 
     def run
-      display_links
+      @links = get_links
+      if @links
+        display_links
+        prompt_action
+        act_on_input
+      else
+        signal_failure
+      end
     end
 
     private
@@ -22,53 +29,33 @@ module Redcli
       ROOT + "/r/" + @subreddit + ".json"
     end
 
-    def display_links
+    def get_links
       response = Faraday.get(url)
       body = JSON.parse(response.body)
       if body
-        links = body["data"]["children"].first(10)
-        links.each_with_index do |link, i|
-          @stdout.puts "#{i+1}) #{link["data"]["title"]}"
-        end
-        prompt_user(:links)
-        input = @stdin.gets.chomp
-        valid_input = false
-        parse_links_input(input, links)
-      else
-        @stdout.puts "Sorry, no data available"
+        body["data"]["children"].first(10)
       end
     end
 
-    def prompt_user(type=:links)
-      if type == :links
-        @stdout.puts "(1-10) for more information, (q)uit"
-      else
-        @stdout.puts "(o)pen in browser, (q)uit"
-      end
+    def signal_failure
+      @stdout.puts "Sorry, reddit is either not responding or the subreddit does not exist, try again"
     end
 
-    def parse_links_input(input, links)
-      if input =~ /[0-9]/
-        link = links[input.to_i - 1]
-        display_link(link)
-        prompt_user(:link)
-        input = @stdin.gets.chomp
-        parse_link_input(input, link, links) 
-      elsif input == 'q'
-        return
-      else
-      puts "Invalid input"
-      prompt_user(links)
-      input = STDIN.gets.chomp
-      parse_links_input(input, links)
+    def display_links
+      @links.each_with_index do |link, i|
+        title = link.fetch("data", { "title" => "No Title"}).fetch("title")
+        @stdout.puts "#{i+1}) #{title}"
       end 
     end
 
-    def display_link(link)
-      if link["data"]["selftext"] != ""
-        puts link["data"]["selftext"]
-      else
-        puts "Topic Url: #{link["data"]["url"]}"
+    def prompt_action
+      @stdout.puts "(q)uit"
+    end
+
+    def act_on_input
+      input = @stdin.gets.chomp
+      if input =~ /q/
+        return
       end
     end
 
