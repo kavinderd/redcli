@@ -1,10 +1,12 @@
 require 'faraday'
 require 'json'
+require 'colorize'
 
 module Redcli
   class Application
 
     ROOT = "http://www.reddit.com"
+    COLORS = [:white, :yellow]
 
     def initialize(subreddit:, stdout:STDOUT, stdin: STDIN)
       @subreddit = subreddit
@@ -44,7 +46,7 @@ module Redcli
     def display_links
       @links.each_with_index do |link, i|
         title = link.fetch("data", { "title" => "No Title"}).fetch("title")
-        @stdout.puts "#{i+1}) #{title}"
+        @stdout.puts "#{i+1}) #{title}".send(COLORS[i%2])
       end 
     end
 
